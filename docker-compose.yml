@@ -1,0 +1,12 @@
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: kronos-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - apps/backend/.env

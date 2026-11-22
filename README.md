@@ -1,1 +1,2 @@
 # kronos--home-keeper
+Kronos - pet-project designed to upbring AI onto common life, it will work on tasks as common smart home managing, personal time manager, instrument to work with PC and a lot more
