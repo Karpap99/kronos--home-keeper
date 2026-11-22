@@ -44,6 +44,35 @@ $ pnpm run start:dev
 $ pnpm run start:prod
 ```
 
+## Authentication
+
+Set `JWT_SECRET` to a long random value in production. JWTs expire after one hour.
+
+Available endpoints:
+
+- `POST /auth/register` — create an account and return an access token
+- `POST /auth/login` — authenticate and return an access token
+- `GET /auth/me` — return the current user; requires `Authorization: Bearer <token>`
+
+The request body for registration and login is:
+
+```json
+{
+  "email": "user@example.com",
+  "password": "strong-password"
+}
+```
+
+## PostgreSQL
+
+Copy `apps/backend/.env.example` to `apps/backend/.env` and set the database and JWT values.
+
+Start PostgreSQL and the backend with Docker Compose:
+
+```bash
+$ docker compose up --build
+```
+
 ## Run tests
 
 ```bash

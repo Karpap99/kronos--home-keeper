@@ -1,12 +1,52 @@
 
 services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: kronos-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-kronos}
+      POSTGRES_USER: ${DB_USERNAME:-kronos}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-kronos}
+    ports:
+      - "${DB_PORT_EXTERNAL:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-kronos} -d ${DB_NAME:-kronos}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   backend:
     build:
       context: .
-      dockerfile: apps/backend/Dockerfile
+      dockerfile: DOCKERFILE
     container_name: kronos-backend
     restart: unless-stopped
     ports:
       - "3000:3000"
     env_file:
       - apps/backend/.env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-kronos}
+      DB_PASSWORD: ${DB_PASSWORD:-kronos}
+      DB_NAME: ${DB_NAME:-kronos}
+    depends_on:
+      postgres:
+        condition: service_healthy
+  pgweb:
+    image: sosedoff/pgweb
+    container_name: pgweb
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    command: [
+      "--bind=0.0.0.0",
+      "--listen=8081"
+    ]
+
+volumes:
+  postgres_data:
